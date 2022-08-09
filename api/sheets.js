@@ -38,7 +38,7 @@ module.exports = app => {
                 return res.status(201).send()
             });
         });
-    }
+    };
 
     const add_user_sheet = (req, res) => {
         console.log(req.body)
@@ -73,7 +73,7 @@ module.exports = app => {
                 return res.status(200).send()
             });
         });
-    }
+    };
 
     const del_sheet = (req, res) => {
         console.log(req.body)
@@ -113,7 +113,7 @@ module.exports = app => {
                 return res.status(401).send("Sem permissão para deletar esta planilha.")
             } 
         });
-    }
+    };
 
     const rename_sheet = (req, res) => {
         console.log(req.body)
@@ -153,7 +153,7 @@ module.exports = app => {
                 return res.status(401).send("Sem permissão para alterar esta planilha.")
             } 
         });
-    }
+    };
 
     const get_sheets = (req, res) => {
         console.log(req.body)
@@ -173,15 +173,30 @@ module.exports = app => {
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
-              return err => res.status(400).send('Erro ao executar processo!')
+              return err => res.status(400).send('Erro ao executar processo!');
             }
-            const sheets = results;
-            console.log(sheets)
-            
-            res.status(200).json(sheets);
-
+            res.status(200).json(results);
           });
-    }
+    };
+
+    const close_spends = (req, res) =>{
+        sql = `
+            UPDATE TB_SPENDS,
+            INNER JOIN  TB_SPREAD_SHEETS ON 
+                TB_SPENDS.SPREAD_SHEET_ID = TB_SPREAD_SHEETS.SPREAD_SHEET_ID
+            SET TB_SPENDS.CLOSED = 1
+            WHERE TB_SPREAD_SHEETS.SPREAD_SHEET_ID = ?
+        `;
+
+        parametros = [[req.body.spread_sheet_id]];
+
+        app.db.query(sql, [parametros], (err) =>{
+            if(err){
+                return res.status(400).send('Erro ao executar processo!');
+            }
+            res.status(200).send("Gastos fechados.")
+        });
+    };
 
     return { new_sheet, get_sheets, del_sheet, add_user_sheet, rename_sheet }
-}
+};
