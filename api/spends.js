@@ -1,16 +1,51 @@
-
+const { application } = require('express');
+const moment = require('moment');
 
 module.exports = app => {
-    
-    const put = (req, res) => {
-        console.log(req.body)
-        sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, DATE) VALUES ?`
-        parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, req.body.description, req.body.value, 'NOW()']]
+    const post = (req, res) => {
+        moment.locale('pt-br');
+        
+        console.log("BODY ", req.body);
+        sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
+        parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, req.body.description, req.body.value, 0, req.body.fixed, moment(new Date()).format("YYYY-MM-DD HH:mm:ss")]]
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
                 return err => res.status(400).json(err);
             }
+
+            sql = ` SELECT USER_ID
+                    FROM TB_USERS_SHEETS
+                    WHERE SPREAD_SHEET_ID = ?
+                `
+            parametros = [[req.body.spread_sheet_id]]
+
+            app.db.query(sql, [parametros], (err, results, fields) => {
+                if (err) {
+                    // return err => res.status(400).json(err);
+                };
+                const users_keys = []
+                results.forEach(element => {
+                    users_keys.push(element.USER_ID+'')
+                });
+
+                sql = ` SELECT NICKNAME
+                        FROM TB_USERS
+                        WHERE USER_ID = ?
+                `
+                parametros = [[req.body.owner_id]]
+                app.db.query(sql, [parametros], (err, results, fields) => {
+                    if (err) {
+                        // return err => res.status(400).json(err);
+                    };
+                    
+                    var stringNotification = `${results[0].NICKNAME} cadastrou ${req.body.description} - R$ ${req.body.value}`
+                    app.api.onesignal.notification_user(users_keys, stringNotification);
+    
+                });
+             
+
+            });
 
             return res.status(200).send()
         });
@@ -18,8 +53,9 @@ module.exports = app => {
 
 
     const get = (req, res) => {
-        console.log(req.body)
-        sql = `SELECT   TB_USERS.NICKNAME
+        console.log("QUERY " + req.query.spread_sheet_id)
+        sql = `SELECT   TB_SPENDS.SPEND_ID
+                        ,TB_USERS.NICKNAME
                         ,TB_SPREAD_SHEETS.NAME
                         ,TB_TAGS.NAME
                         ,TB_SPENDS.DESCRIPTION
@@ -32,8 +68,10 @@ module.exports = app => {
                         TB_SPENDS.OWNER_ID = TB_USERS.USER_ID
                     INNER JOIN TB_TAGS ON
                         TB_SPENDS.TAG_ID = TB_TAGS.TAG_ID
-                    WHERE TB_SPENDS.SPREAD_SHEET_ID = ?`
-        parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, req.body.description, req.body.value, 'NOW()']]
+                    WHERE   TB_SPENDS.CLOSED = 0
+                            AND TB_SPENDS.SPREAD_SHEET_ID = ?
+                    ORDER BY TB_SPENDS.DATE DESC`
+        parametros = [[req.query.spread_sheet_id]]
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
@@ -46,5 +84,5 @@ module.exports = app => {
 
 
 
-    return { put, get }
+    return { post, get }
 }

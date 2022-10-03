@@ -15,19 +15,29 @@ module.exports = app => {
         .all(app.config.passport.authenticate())
         .post(app.api.sheets.new_sheet)
         .get(app.api.sheets.get_sheets)
-        .patch(app.api.sheets.add_user_sheet)
-        .put(app.api.sheets.rename_sheet)
-        .delete(app.api.sheets.del_sheet);
+        .put(app.api.sheets.rename_sheet);
     
+    app.route('/sheets/del')
+        .all(app.config.passport.authenticate())
+        .post(app.api.sheets.del_sheet);
+
+    app.route('/sheets/close')
+        .all(app.config.passport.authenticate())
+        .get(app.api.sheets.close_spends)
+    
+    app.route('/sheets/invite')
+        .all(app.config.passport.authenticate())
+        .post(app.api.sheets.add_user_sheet)
+
     app.route('/spends')
         .all(app.config.passport.authenticate())
         .get(app.api.spends.get)
-        .put(app.api.spends.put);
+        .post(app.api.spends.post);
     
     app.route('/tags')
         .all(app.config.passport.authenticate())
-        .get(app.api.spends.get)
-        .put(app.api.spends.put);
+        .get(app.api.tags.get)
+        .post(app.api.tags.post);
 
 
 };

@@ -36,7 +36,7 @@ module.exports = app => {
                     });
                 }
                 else{
-                    res.status(400).send('Usuário já cadastrado.')
+                    res.status(200).send('Usuário já cadastrado.')
                 }
             })
         })

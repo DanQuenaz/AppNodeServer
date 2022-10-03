@@ -2,8 +2,8 @@
 
 module.exports = app => {
     
-    const put = (req, res) => {
-        console.log(req.body)
+    const post = (req, res) => {
+        console.log(req.body);
         sql = `INSERT INTO TB_TAGS(OWNER_ID, NAME) VALUES ?`
         parametros = [[req.body.owner_id, req.body.name ]]
 
@@ -18,11 +18,13 @@ module.exports = app => {
 
 
     const get = (req, res) => {
-        console.log(req.body)
-        sql = ` SELECT   NAME
+        console.log("CARAMBOLA", req.query.owner_id)
+        sql = ` SELECT  TAG_ID as id
+                        ,NAME as label
+                FROM TB_TAGS
                 WHERE   OWNER_ID = 1
                         OR OWNER_ID = ?`
-        parametros = [[req.body.owner_id]]
+        parametros = [[req.query.owner_id]]
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
@@ -35,5 +37,5 @@ module.exports = app => {
 
 
 
-    return { put, get }
+    return { post, get }
 }
