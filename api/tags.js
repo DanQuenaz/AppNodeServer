@@ -3,7 +3,7 @@
 module.exports = app => {
     
     const post = (req, res) => {
-        console.log(req.body);
+       
         sql = `INSERT INTO TB_TAGS(OWNER_ID, NAME) VALUES ?`
         parametros = [[req.body.owner_id, req.body.name ]]
 
@@ -14,11 +14,11 @@ module.exports = app => {
 
             return res.status(200).send()
         });
-    }
+    };
 
 
     const get = (req, res) => {
-        console.log("CARAMBOLA", req.query.owner_id)
+        
         sql = ` SELECT  TAG_ID as id
                         ,NAME as label
                 FROM TB_TAGS
@@ -33,9 +33,24 @@ module.exports = app => {
 
             return res.status(200).json(results)
         });
-    }
+    };
+
+    const del = (req, res) => {
+        
+        sql = ` DELETE FROM TB_TAGS
+                WHERE   TAG_ID = ?`
+        parametros = [[req.query.tag_id]]
+
+        app.db.query(sql, [parametros], (err, results, fields) => {
+            if (err) {
+                return err => res.status(400).json(err);
+            }
+
+            return res.status(200).send("Tag deletada.")
+        });
+    };
 
 
 
-    return { post, get }
+    return { post, get, del }
 }

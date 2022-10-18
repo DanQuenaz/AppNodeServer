@@ -16,7 +16,7 @@ module.exports = app => {
             'z2j3m5n6p7',
             'x2j3m5n6p8',
             'd2z2j3m5n6' ]
-        console.log(req.body)
+        
 
         app.db.query(`START TRANSACTION`);
 
@@ -25,8 +25,7 @@ module.exports = app => {
         invite_code_uncript = req.body.owner_id + req.body.name + moment()
         invite_code = md5(invite_code_uncript) + baseCode[Math.floor(Math.random() * 10)] 
         
-        console.log(invite_code_uncript)
-        console.log(invite_code)
+       
         
         parametros = [[req.body.owner_id, req.body.name, invite_code, moment(new Date()).format("YYYY-MM-DD HH:mm:ss")]]
 
@@ -56,7 +55,7 @@ module.exports = app => {
     };
 
     const add_user_sheet = (req, res) => {
-        console.log(req.body)
+   
 
         sql = ` SELECT SPREAD_SHEET_ID
                 FROM TB_SPREAD_SHEETS
@@ -130,7 +129,7 @@ module.exports = app => {
     };
 
     const rename_sheet = (req, res) => {
-        console.log(req.body)
+
 
         app.db.query(`START TRANSACTION`);
 
@@ -170,7 +169,7 @@ module.exports = app => {
     };
 
     const get_sheets = (req, res) => {
-        console.log( req.query)
+  
       
         sql = ` SELECT  TB_SPREAD_SHEETS.SPREAD_SHEET_ID
                         ,TB_SPREAD_SHEETS.NAME
@@ -197,7 +196,7 @@ module.exports = app => {
     };
 
     const close_spends = (req, res) =>{
-        console.log(req.query)
+
         sql = `
             UPDATE TB_SPENDS
             INNER JOIN  TB_SPREAD_SHEETS ON 

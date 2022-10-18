@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt-nodejs')
+const md5 = require('md5');
 
 module.exports = app => {
     const obterHash = (password, callback) => {
@@ -8,11 +9,11 @@ module.exports = app => {
     }
 
     const new_user = (req, res) => {
-        console.log(req.body)
+        // console.log(req.body)
 
         obterHash(req.body.password, hash => {
             const password = hash
-            console.log(password)
+            // console.log(password)
 
             sql = `SELECT EMAIL FROM TB_USERS WHERE UPPER(EMAIL) = UPPER(?)`
             parametros = [[req.body.email]]
@@ -24,13 +25,15 @@ module.exports = app => {
                 email = results[0]
 
                 if(!email){
-                    sql = `INSERT INTO TB_USERS(NAME, EMAIL, NICKNAME, PASSWORD, ACCOUNT_TYPE) VALUES ?`
-                    parametros = [[req.body.name, req.body.email, req.body.nickname, password, 0]]
+                    sql = `INSERT INTO TB_USERS(NAME, EMAIL, NICKNAME, PASSWORD, ACCOUNT_TYPE, ACCOUNT_VALIDATE, ACCOUNT_CODE_VALIDATE) VALUES ?`
+                    parametros = [[req.body.name, req.body.email, req.body.nickname, password, 0, 0, md5(req.body.email)]]
 
                     app.db.query(sql, [parametros], (err, results, fields) => {
                         if (err) {
                         return err => res.status(400).json(err);
                         }
+                        // var stringNotification = `TESTE`;
+                        // app.api.onesignal.notification_user_email([req.body.email], stringNotification);
 
                         return res.status(201).send()
                     });
@@ -43,7 +46,7 @@ module.exports = app => {
     }
 
     const get_user = (req, res) => {
-        console.log(req.body)
+        // console.log(req.body)
         const user =  app.db('TB_USERS')
             .whereRaw("LOWER(NICKNAME) = LOWER(?)", req.body.nickname)
             .first()
