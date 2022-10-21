@@ -67,8 +67,7 @@ CREATE TABLE TB_SPENDS(
 
 );
 
-CREATE VIEW v_totais_planilhas AS 
-select tb_spends.SPREAD_SHEET_ID AS SPREAD_SHEET_ID
-		,sum(tb_spends.VALUE) AS TOTAL_VALUE 
-from tb_spends 
-group by tb_spends.SPREAD_SHEET_ID;
+CREATE VIEW v_totais_planilhas AS select TB_SPENDS.SPREAD_SHEET_ID AS SPREAD_SHEET_ID
+,sum(TB_SPENDS.VALUE) AS TOTAL_VALUE 
+from TB_SPENDS 
+group by TB_SPENDS.SPREAD_SHEET_ID;
