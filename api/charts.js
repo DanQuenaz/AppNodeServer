@@ -25,14 +25,14 @@ module.exports = app =>{
             `; 
         }else if(req.query.type == "tag"){
             sql = `
-                SELECT 	tb_tags.NAME
+                SELECT 	TB_TAGS.NAME
                         ,sum(TB_SPENDS.VALUE) AS TOTAL
                 FROM TB_SPENDS
-                    INNER JOIN tb_tags ON
-                        TB_SPENDS.TAG_ID = tb_tags.TAG_ID
+                    INNER JOIN TB_TAGS ON
+                        TB_SPENDS.TAG_ID = TB_TAGS.TAG_ID
                 WHERE 	month(TB_SPENDS.DATE) = ${req.query.month}
                         AND TB_SPENDS.SPREAD_SHEET_ID = ${req.query.spread_sheet_id}
-                GROUP BY tb_tags.NAME;
+                GROUP BY TB_TAGS.NAME;
             `;
         }
 
