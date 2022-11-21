@@ -74,7 +74,7 @@ module.exports = app => {
                         TB_SPENDS.TAG_ID = TB_TAGS.TAG_ID
                     WHERE   TB_SPENDS.CLOSED = 0
                             AND TB_SPENDS.SPREAD_SHEET_ID = ?
-                            AND month(TB_SPENDS.DATE) = ${req.query.month}
+                            AND (month(TB_SPENDS.DATE) = ${req.query.month} OR TB_SPENDS.FIXED = 1)
                     ORDER BY TB_SPENDS.DATE DESC`
         parametros = [[req.query.spread_sheet_id]]
 
