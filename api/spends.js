@@ -54,7 +54,7 @@ module.exports = app => {
 
 
     const get = (req, res) => {
-        // console.log("QUERY " + req.query.spread_sheet_id)
+        console.log("QUERY " + req.query.month)
         sql = `SELECT   TB_SPENDS.SPEND_ID
                         ,TB_USERS.NICKNAME
                         ,TB_SPREAD_SHEETS.NAME
