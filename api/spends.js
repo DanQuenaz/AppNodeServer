@@ -7,7 +7,7 @@ module.exports = app => {
         
         // console.log("BODY ", req.body);
         sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
-        parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, req.body.description, req.body.value, 0, req.body.fixed, moment(new Date()).format("YYYY-MM-DD HH:mm:ss")]]
+        parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, req.body.description, req.body.value, 0, req.body.fixed, moment(req.body.date).format("YYYY-MM-DD HH:mm:ss")]]
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
