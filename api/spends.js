@@ -7,7 +7,12 @@ module.exports = app => {
         
         // console.log("BODY ", req.body);
         sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
-        parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, req.body.description, req.body.value, 0, req.body.fixed, moment(req.body.date).format("YYYY-MM-DD HH:mm:ss")]]
+        parametros = []
+
+        req.body.installments_info.forEach(element=>{
+            parametros.push([req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
+        });
+        
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
@@ -30,20 +35,8 @@ module.exports = app => {
                     users_keys.push(element.USER_ID+'')
                 });
 
-                sql = ` SELECT NICKNAME
-                        FROM TB_USERS
-                        WHERE USER_ID = ?
-                `
-                parametros = [[req.body.owner_id]]
-                app.db.query(sql, [parametros], (err, results, fields) => {
-                    if (err) {
-                        // return err => res.status(400).json(err);
-                    };
-                    
-                    var stringNotification = `${results[0].NICKNAME} cadastrou ${req.body.description} - R$ ${req.body.value}`
-                    app.api.onesignal.notification_user(users_keys, stringNotification);
-    
-                });
+                var stringNotification = req.body.notification;
+                app.api.onesignal.notification_user(users_keys, stringNotification);
              
 
             });
