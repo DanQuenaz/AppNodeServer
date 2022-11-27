@@ -5,7 +5,7 @@ module.exports = app => {
     const post = (req, res) => {
         moment.locale('pt-br');
         
-        // console.log("BODY ", req.body);
+        console.log("BODY ", req.body);
         sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
         parametros = []
 
