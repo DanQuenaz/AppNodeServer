@@ -119,10 +119,10 @@ module.exports = app => {
 
     const months = (req, res)=>{
         let sql = `
-            SELECT DISTINCT MONTH(DATE) AS MONTH_SPED, YEAR(DATE) AS YEAR_SPEND
+            SELECT DISTINCT MONTH(DATE) AS MONTH_SPEND, YEAR(DATE) AS YEAR_SPEND
             FROM TB_SPENDS
             WHERE SPREAD_SHEET_ID = ?
-            ORDER BY MONTH_SPED, YEAR_SPEND;
+            ORDER BY MONTH_SPEND, YEAR_SPEND;
         `;
 
         console.log(req.query)
