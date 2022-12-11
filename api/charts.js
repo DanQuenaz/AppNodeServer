@@ -10,7 +10,7 @@ module.exports = app =>{
                 FROM TB_SPENDS
                     INNER JOIN TB_USERS ON
                         TB_SPENDS.OWNER_ID = TB_USERS.USER_ID
-                WHERE 	month(TB_SPENDS.DATE) = ${req.query.month}
+                WHERE 	(month(TB_SPENDS.DATE) = ${req.query.month} AND year(TB_SPENDS.DATE) = ${req.query.year})
                         AND TB_SPENDS.SPREAD_SHEET_ID = ${req.query.spread_sheet_id}
                 GROUP BY TB_USERS.NICKNAME;
             `;
@@ -30,7 +30,7 @@ module.exports = app =>{
                 FROM TB_SPENDS
                     INNER JOIN TB_TAGS ON
                         TB_SPENDS.TAG_ID = TB_TAGS.TAG_ID
-                WHERE 	month(TB_SPENDS.DATE) = ${req.query.month}
+                WHERE 	(month(TB_SPENDS.DATE) = ${req.query.month} AND year(TB_SPENDS.DATE) = ${req.query.year})
                         AND TB_SPENDS.SPREAD_SHEET_ID = ${req.query.spread_sheet_id}
                 GROUP BY TB_TAGS.NAME;
             `;
