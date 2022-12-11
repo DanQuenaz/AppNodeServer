@@ -117,7 +117,26 @@ module.exports = app => {
         });
     };
 
+    const months = (req, res)=>{
+        let sql = `
+            SELECT DISTINCT MONTH(DATE) AS MONTH_SPED, YEAR(DATE) AS YEAR_SPEND
+            FROM TB_SPENDS
+            WHERE SPREAD_SHEET_ID = ?
+            ORDER BY MONTH_SPED, YEAR_SPEND;
+        `;
+
+        let parametros = [[req.query.spread_sheet_id]];
+
+        app.db.query(sql, [parametros], (err, results, fields)=>{
+            if(err){
+                return err => res.status(400).json(err);
+            }
+            return res.status(200).json(results);
+        });
+
+    };
 
 
-    return { post, get, del, edit }
+
+    return { post, get, del, edit, months }
 }

@@ -54,5 +54,9 @@ module.exports = app => {
     app.route('/charts')
         .get(app.api.charts.get);
 
+    app.route('/spends/months')
+        .all(app.config.passport.authenticate())
+        .get(app.api.spends.months);
+
 
 };
