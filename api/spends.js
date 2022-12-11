@@ -125,6 +125,8 @@ module.exports = app => {
             ORDER BY MONTH_SPED, YEAR_SPEND;
         `;
 
+        console.log(req.query)
+
         let parametros = [[req.query.spread_sheet_id]];
 
         app.db.query(sql, [parametros], (err, results, fields)=>{
