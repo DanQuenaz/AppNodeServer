@@ -128,7 +128,8 @@ module.exports = app => {
             SELECT DISTINCT MONTH(DATE) AS MONTH_SPEND, YEAR(DATE) AS YEAR_SPEND
             FROM TB_SPENDS
             WHERE SPREAD_SHEET_ID = ?
-            ORDER BY MONTH_SPEND, YEAR_SPEND;
+            AND DATE >= DATE_SUB(curdate(), INTERVAL 30 DAY)
+            ORDER BY YEAR_SPEND, MONTH_SPEND;
         `;
 
         console.log(req.query)
