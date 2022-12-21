@@ -24,7 +24,7 @@ module.exports = app => {
             let parametros = []
 
             installments_aux.forEach(element=>{
-                parametros.push([results.SPEND_ID, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
+                parametros.push([results.inserId, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
             });
 
             console.log("2", parametros, results, fields)
