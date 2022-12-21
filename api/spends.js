@@ -22,12 +22,13 @@ module.exports = app => {
 
             let sql = `INSERT INTO TB_SPENDS(INSTALLMENT_ID, OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
             let parametros = []
+            let insertId = results.insertId
 
             installments_aux.forEach(element=>{
-                parametros.push([results.inserId, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
+                parametros.push([insertId, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
             });
 
-            console.log("2", parametros, results.insertId)
+            console.log("2", parametros)
             app.db.query(sql, [parametros], (err, results, fields)=>{
                 if (err) {
                     return err => res.status(400).json(err);
