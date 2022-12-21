@@ -50,7 +50,11 @@ module.exports = app => {
                     });
 
                     var stringNotification = req.body.notification;
-                    app.api.onesignal.notification_user(users_keys, stringNotification);
+                    
+                    if(users_keys){
+                        app.api.onesignal.notification_user(users_keys, stringNotification);
+                    }
+                        
              
 
                 });
@@ -104,7 +108,8 @@ module.exports = app => {
     const del = (req, res) => {
         sql = `
             DELETE FROM TB_SPENDS
-            WHERE SPEND_ID = ?
+            WHERE   SPEND_ID = ?
+                    OR INSTALLMENT_ID = ${req.query.spend_id}
         `;
         parametros = [[req.query.spend_id]];
         // console.log(sql)
