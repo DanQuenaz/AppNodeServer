@@ -12,7 +12,7 @@ module.exports = app => {
         let first_installment = installments_aux.shift()
 
         let parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, first_installment.description, first_installment.value, 0, req.body.fixed, moment(first_installment.date).format("YYYY-MM-DD HH:mm:ss")]]
-        console.log()
+        console.log("1", parametros)
 
 
         app.db.query(sql, [parametros], (err, results, fields) => {
@@ -27,6 +27,7 @@ module.exports = app => {
                 parametros.push([results.SPEND_ID, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
             });
 
+            console.log("2", parametros)
             app.db.query(sql, [parametros], (err, results, fields)=>{
                 if (err) {
                     return err => res.status(400).json(err);
