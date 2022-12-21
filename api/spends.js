@@ -27,7 +27,7 @@ module.exports = app => {
                 parametros.push([results.SPEND_ID, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
             });
 
-            console.log("2", parametros, results)
+            console.log("2", parametros, results, 1)
             app.db.query(sql, [parametros], (err, results, fields)=>{
                 if (err) {
                     return err => res.status(400).json(err);
