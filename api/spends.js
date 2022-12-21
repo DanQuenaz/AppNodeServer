@@ -6,41 +6,54 @@ module.exports = app => {
         moment.locale('pt-br');
         
         console.log("BODY ", req.body);
-        sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
-        parametros = []
-
-        req.body.installments_info.forEach(element=>{
-            parametros.push([req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
-        });
+        let sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
         
+        let installments_aux = req.body.installments_info
+        let first_installment = installments_aux.shift()
+
+        let parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, first_installment.description, first_installment.value, 0, req.body.fixed, moment(first_installment.date).format("YYYY-MM-DD HH:mm:ss")]]
+        console.log()
+
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
                 return err => res.status(400).json(err);
             }
 
-            sql = ` SELECT USER_ID
+            let sql = `INSERT INTO TB_SPENDS(INSTALLMENT_ID, OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
+            let parametros = []
+
+            installments_aux.forEach(element=>{
+                parametros.push([results.SPEND_ID, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
+            });
+
+            app.db.query(sql, [parametros], (err, results, fields)=>{
+                if (err) {
+                    return err => res.status(400).json(err);
+                }
+                let sql = ` SELECT USER_ID
                     FROM TB_USERS_SHEETS
                     WHERE   USER_ID != ${req.body.owner_id}
                             AND SPREAD_SHEET_ID = ?
                 `
-            parametros = [[req.body.spread_sheet_id]]
+                parametros = [[req.body.spread_sheet_id]]
 
-            app.db.query(sql, [parametros], (err, results, fields) => {
-                if (err) {
-                    // return err => res.status(400).json(err);
-                };
-                const users_keys = []
-                results.forEach(element => {
-                    users_keys.push(element.USER_ID+'')
-                });
+                app.db.query(sql, [parametros], (err, results, fields) => {
+                    if (err) {
+                        // return err => res.status(400).json(err);
+                    };
+                    const users_keys = []
+                    results.forEach(element => {
+                        users_keys.push(element.USER_ID+'')
+                    });
 
-                var stringNotification = req.body.notification;
-                app.api.onesignal.notification_user(users_keys, stringNotification);
+                    var stringNotification = req.body.notification;
+                    app.api.onesignal.notification_user(users_keys, stringNotification);
              
 
-            });
+                });
 
+            });
             return res.status(200).send()
         });
     }
