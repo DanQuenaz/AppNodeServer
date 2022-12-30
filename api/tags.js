@@ -4,8 +4,8 @@ module.exports = app => {
     
     const post = (req, res) => {
        
-        sql = `INSERT INTO TB_TAGS(OWNER_ID, NAME) VALUES ?`
-        parametros = [[req.body.owner_id, req.body.name ]]
+        sql = `INSERT INTO TB_TAGS(OWNER_ID, NAME, DEFAULT_TAG) VALUES ?`
+        parametros = [[req.body.owner_id, req.body.name, 0 ]]
 
         app.db.query(sql, [parametros], (err, results, fields) => {
             if (err) {
@@ -22,7 +22,7 @@ module.exports = app => {
         sql = ` SELECT  TAG_ID as id
                         ,NAME as label
                 FROM TB_TAGS
-                WHERE   OWNER_ID = 1
+                WHERE   DEFAULT_TAG = 1
                         OR OWNER_ID = ?`
         parametros = [[req.query.owner_id]]
 
@@ -49,8 +49,6 @@ module.exports = app => {
             return res.status(200).send("Tag deletada.")
         });
     };
-
-
 
     return { post, get, del }
 }

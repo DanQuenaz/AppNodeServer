@@ -4,14 +4,18 @@ const moment = require('moment');
 module.exports = app => {
     const post = (req, res) => {
         moment.locale('pt-br');
+
+        if(req.body.is_update){
+            del(req, res);
+        };
         
         console.log("BODY ", req.body);
-        let sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
+        let sql = `INSERT INTO TB_SPENDS(OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, TOTAL_VALUE, VALUE, CLOSED, FIXED, TOTAL_INSTALLMENTS, INITIAL_DATE, DATE) VALUES ?`
         
         let installments_aux = req.body.installments_info
         let first_installment = installments_aux.shift()
 
-        let parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, first_installment.description, first_installment.value, 0, req.body.fixed, moment(first_installment.date).format("YYYY-MM-DD HH:mm:ss")]]
+        let parametros = [[req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, first_installment.description, req.body.total_value, first_installment.value, 0, req.body.fixed, req.body.installments, moment(req.body.initial_date).format("YYYY-MM-DD HH:mm:ss"), moment(first_installment.date).format("YYYY-MM-DD HH:mm:ss")]]
         console.log("1", parametros)
 
 
@@ -20,12 +24,12 @@ module.exports = app => {
                 return err => res.status(400).json(err);
             }
 
-            let sql = `INSERT INTO TB_SPENDS(INSTALLMENT_ID, OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, VALUE, CLOSED, FIXED, DATE) VALUES ?`
+            let sql = `INSERT INTO TB_SPENDS(INSTALLMENT_ID, OWNER_ID, SPREAD_SHEET_ID, TAG_ID, DESCRIPTION, TOTAL_VALUE, VALUE, CLOSED, FIXED, TOTAL_INSTALLMENTS, INITIAL_DATE, DATE) VALUES ?`
             let parametros = []
             let insertId = results.insertId
 
             installments_aux.forEach(element=>{
-                parametros.push([insertId, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, element.value, 0, req.body.fixed, moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
+                parametros.push([insertId, req.body.owner_id, req.body.spread_sheet_id, req.body.tag_id, element.description, req.body.total_value, element.value, 0, req.body.fixed, req.body.installments, moment(req.body.initial_date).format("YYYY-MM-DD HH:mm:ss"), moment(element.date).format("YYYY-MM-DD HH:mm:ss")])
             });
 
             console.log("2", parametros)
@@ -72,8 +76,11 @@ module.exports = app => {
                         ,TB_SPREAD_SHEETS.NAME
                         ,TB_TAGS.NAME
                         ,TB_SPENDS.DESCRIPTION
+                        ,TB_SPENDS.TOTAL_VALUE
                         ,TB_SPENDS.VALUE
+                        ,TB_SPENDS.INITIAL_DATE
                         ,TB_SPENDS.DATE
+                        ,TB_SPENDS.TOTAL_INSTALLMENTS
                         ,TB_SPENDS.FIXED
                         ,TB_SPENDS.TAG_ID
                         ,TB_SPENDS.OWNER_ID
@@ -123,7 +130,7 @@ module.exports = app => {
 
     const edit = (req, res) => {
         
-        sql = `
+        const sql = `
             UPDATE TB_SPENDS
             SET DESCRIPTION = '${req.body.description}',
                 VALUE = ${req.body.value},
